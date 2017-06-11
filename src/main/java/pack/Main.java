@@ -134,11 +134,13 @@ public class Main {
             List<Double> filterList= new ArrayList<>();
             for (int i = 0; i <1024 ; i++) {
                 for (int j = 0; j < 1024; j++) {
-                    Integer[] suroundCell= calSubArrFromArr2D(winSize, i, j, arr2D);
-                    double stdDeviation= calculateStandardDeviation(suroundCell);
-                    if (stdDeviation==0.0){
+                    Integer[] surroundCell= calSubArrFromArr2D(winSize, i, j, arr2D);
+                    double stdDeviation= calculateStandardDeviation(surroundCell);
+                    if (stdDeviation==0.0D){
                         filterList.add(0.0D);
                     }else{
+
+                        //this line is wrong, it must be avg (surroundCell)/stdDeviation
                         filterList.add(arr2D[i][j]/stdDeviation);
                     }
                 }
@@ -149,12 +151,9 @@ public class Main {
                 Pair<Double, Double> tmpPair= new Pair<>(intensityList.get(i), filterList.get(i));
                 mergeIntensityAndFilter.add(tmpPair);
             }
-
-
             Stream<Double> resStream=mergeIntensityAndFilter.stream().parallel().map(pair ->
                     (Double) pair.getFirst()*cd+ (1-cd)* (Double)pair.getSecond()
             );
-
             return resStream.collect(Collectors.toList()).toArray(new Double[1024*1024]);
 
         }
@@ -210,6 +209,12 @@ public class Main {
             e.printStackTrace();
         }
 
+        try{
+            Thread.sleep(10000);
+        }catch (InterruptedException ie){
+            ie.printStackTrace();
+        }
+
         System.out.println(result.length);
     }
 
@@ -241,7 +246,7 @@ public class Main {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         System.out.println("Main run");
 
         System.out.println(System.currentTimeMillis()/1000);
@@ -253,7 +258,9 @@ public class Main {
                 "IMAGERY.TIF_1024_0.csv", "IMAGERY.TIF_1024_1024.csv", "IMAGERY.TIF_1024_2048.csv"};
 
 
-        String prefixPath= "C:\\Users\\magic_000\\Desktop\\csv";
+
+        //String prefixPath= "C:\\Users\\magic_000\\Desktop\\csv";
+        String prefixPath= "/home/magicghost_vu/Desktop/csv";
 
         //File csvFile= new File(prefixPath+File.separator+listFileName[0]);
 
@@ -264,13 +271,7 @@ public class Main {
             System.out.println("Processing file "+ fileName);
             processAFile(csv);
         }
-
-
-
         System.out.println(System.currentTimeMillis()/1000);
-
-
-
 
     }
 }
